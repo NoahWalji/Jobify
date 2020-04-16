@@ -1,24 +1,20 @@
 import React, {Component} from "react";
 
 class JobPost extends Component {
-
-  render()
+  constructor(props)
   {
-    let results;
-    if(this.props.results)
-    {
-      results = this.props.results;
-      console.log()
-    }
+    super(props);
+  };
 
+  render() {
     return(
-      <div>
-        <h1>{results ? results[0][0].jobtitle: null}</h1>
+      <div className="jobPost">
+        <h1>{this.props.jobTitle}</h1>
+        <p>{this.props.company}</p>
 
       </div>
     )
   }
-
 
 }
 

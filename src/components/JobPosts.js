@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import JobPost from "./JobPost"
 import axios from "axios"
+import JobPost from "./JobPost"
 
 class JobPosts extends Component {
 
@@ -8,6 +8,7 @@ class JobPosts extends Component {
   {
     super(props);
     this.state = {
+      search: "",
       latitude: null,
       longitude: null,
       userCity: null,
@@ -15,7 +16,7 @@ class JobPosts extends Component {
       userCountryCode: null,
       indeedData: null,
       locationData: null,
-      results: null
+      results: []
     };
     this.getLocation = this.getLocation.bind(this);
     this.getAddress = this.getAddress.bind(this);
@@ -70,9 +71,7 @@ class JobPosts extends Component {
             this.setState(
               {
                 userCountryCode: this.state.locationData[i].short_name
-              }, () => {
-                this.getIndeedData();
-                }
+              }
             );
           }
 
@@ -80,26 +79,48 @@ class JobPosts extends Component {
       })
   }
 
+  onSubmit = (e) => {
+    e.preventDefault()
+    this.searchResult = this.state.searchResult;
+    this.getIndeedData();
+
+  }
+
+  textChange = (e) => {
+    this.setState({searchResult: e.target.value})
+
+  }
+
   getIndeedData()
   {
-    axios.get("https://api.indeed.com/ads/apisearch?publisher=" + process.env.REACT_APP_INDEED_API_KEY + "&v=2&format=json&q=java&l="+ this.state.userCity + "%2C+"+ this.state.userState + "&co=" + this.state.userCountryCode + "&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29")
+    axios.get("https://api.indeed.com/ads/apisearch?publisher=" + process.env.REACT_APP_INDEED_API_KEY + "&v=2&format=json&q="+ this.state.searchResult + "&l="+ this.state.userCity +
+    "%2C+"+ this.state.userState + "&co=" + this.state.userCountryCode + "&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&limit=25")
     .then(res => {
       this.setState({
-        results: [res.data.results]
+        results: res.data.results
+
       })
     });
-
   }
 
   componentDidMount(){
     this.getLocation();
 
   }
+
   render()
   {
+    this.posts = this.state.results.map((post, key) =>
+      <JobPost jobKey={post.jobkey} jobTitle = {post.jobtitle} company = {post.company} city = {post.city} state = {post.state} country = {post.country} desc = {post.snippet}
+      url = {post.url} />
+    );
+
     return(
       <div>
-        <JobPost results={this.state.results}/>
+        <form onSubmit={this.onSubmit}>
+            <input type="text" id="searchBar" placeholder="Search for a job near you..." onChange={this.textChange}/>
+        </form>
+        {this.posts}
       </div>
       )
   }

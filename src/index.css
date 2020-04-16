@@ -10,30 +10,34 @@ body {
 }
 
 .container {
-  position: absolute;
   text-align: center;
   background-color: #f8fcf5;
   box-shadow: 10px 10px 8px 10px #888888;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50%;
+  margin: 0 auto;
+  margin-top: 3%;
   padding: 7%;
+  width: 50%;
+  height: 75%;
 
 }
 
 #bigname-title {
+  flex: 1;
   font-family: 'Syncopate', sans-serif;
   font-size: 73px;
   display:block;
+  text-align: center;
 
 }
 
 #bigname-tag {
+  display: block;
   font-size: 33px;
+  text-align: center;
 }
 
 #searchBar {
+  flex: 1;
   margin-top: 2%;
   border-radius: 20px;
   width: 50%;
@@ -43,4 +47,15 @@ body {
   background-position: 10px, 50%;
   background-repeat: no-repeat;
   padding: 12px 20px 12px 40px;
+}
+
+.jobPost {
+  box-shadow: 10px 10px 8px 10px #888888;
+
+
+}
+
+.bigname {
+  left: 50%;
+  height: 25%;
 }
