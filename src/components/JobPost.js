@@ -1,18 +1,24 @@
 import React, {Component} from "react";
 
 class JobPost extends Component {
-  constructor(props)
-  {
-    super(props);
-  };
-
+  constructor(props){
+    super(props)
+    this.state = {
+      jobTitle: this.props.jobTitle[0].toUpperCase() + this.props.jobTitle.slice(1)
+    };
+  }
   render() {
-    return(
-      <div className="jobPost">
-        <h1>{this.props.jobTitle}</h1>
-        <p>{this.props.company}</p>
 
+    // Renders a single Job Post Componenet with Job Titles, Location, Company and Description
+    return(
+    <a href={this.props.url}>
+      <div className="jobPost" id="grow">
+        <span id="jobTitle">{this.state.jobTitle}</span>
+        <span>{this.props.company} - {this.props.city}, {this.props.state}, {this.props.country}</span>
+        <p id="jobLocation"></p>
+        <p>{this.props.desc}</p>
       </div>
+    </a>
     )
   }
 

@@ -9,15 +9,29 @@ body {
   background-color: rgb(180, 255, 179);
 }
 
+.Loading {
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  margin-left: -50px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .container {
-  text-align: center;
-  background-color: #f8fcf5;
+  background-color: white;
   box-shadow: 10px 10px 8px 10px #888888;
   margin: 0 auto;
   margin-top: 3%;
   padding: 7%;
   width: 50%;
   height: 75%;
+  overflow: scroll;
 
 }
 
@@ -49,8 +63,21 @@ body {
   padding: 12px 20px 12px 40px;
 }
 
+.searchBox {
+  text-align: center;
+}
+
 .jobPost {
-  box-shadow: 10px 10px 8px 10px #888888;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 20px;
+  border-color: #D6D4D4;
+  margin: 3%;
+  width: 300px;
+  height: 300px;
+  display: inline-grid;
+  overflow: hidden;
+
 
 
 }
@@ -58,4 +85,21 @@ body {
 .bigname {
   left: 50%;
   height: 25%;
+}
+
+#jobTitle {
+  font-weight: bold;
+  font-size: 20px;
+  display: block;
+}
+
+#jobLocation {
+  line-height: 1px;
+}
+
+#grow:hover
+{
+    -webkit-transform: scale(1.05);
+    -ms-transform: scale(1.05);
+    transform: scale(1.05);
 }

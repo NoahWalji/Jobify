@@ -4,97 +4,27 @@ import JobPost from "./JobPost"
 
 class JobPosts extends Component {
 
+  // Job Post Constructor
   constructor(props)
   {
     super(props);
     this.state = {
-      search: "",
-      latitude: null,
-      longitude: null,
-      userCity: null,
-      userState: null,
-      userCountryCode: null,
-      indeedData: null,
-      locationData: null,
-      results: []
+      searchTerm: undefined, // Search Term From User
+      results: []           // Results Taken From Job Sites
     };
-    this.getLocation = this.getLocation.bind(this);
-    this.getAddress = this.getAddress.bind(this);
+
+    // Binding Functions to this
     this.getIndeedData = this.getIndeedData.bind(this);
   }
 
-  getLocation() {
-    if (navigator.geolocation)
-    {
-      navigator.geolocation.getCurrentPosition(this.getAddress);
-    }
 
-    else {
-      alert("Location not supported by browser");
-    }
-  }
-
-  getAddress(position) {
-    this.setState({
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude
-    });
-
-    axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + this.state.latitude +","+ this.state.longitude +"&key=" + process.env.REACT_APP_GOOGLE_API_KEY )
-      .then(res => {
-        this.setState({
-          locationData: res.data.results[0].address_components
-        });
-
-        for (let i = 0; i < this.state.locationData.length; i++)
-        {
-          if (this.state.locationData[i].types[0] === "locality")
-          {
-            this.setState(
-              {
-                userCity: this.state.locationData[i].long_name
-              }
-            );
-          }
-
-          else if (this.state.locationData[i].types[0] === "administrative_area_level_1")
-          {
-            this.setState(
-              {
-                userState: this.state.locationData[i].short_name
-              }
-            );
-          }
-
-          else if (this.state.locationData[i].types[0] === "country")
-          {
-            this.setState(
-              {
-                userCountryCode: this.state.locationData[i].short_name
-              }
-            );
-          }
-
-        }
-      })
-  }
-
-  onSubmit = (e) => {
-    e.preventDefault()
-    this.searchResult = this.state.searchResult;
-    this.getIndeedData();
-
-  }
-
-  textChange = (e) => {
-    this.setState({searchResult: e.target.value})
-
-  }
-
-  getIndeedData()
+  // Function that takes Location Data as well as the search Term given by the user to get Job Data from "INDEED"
+  // Sets the state of Results with Job Objects
+  getIndeedData = () =>
   {
-    axios.get("https://api.indeed.com/ads/apisearch?publisher=" + process.env.REACT_APP_INDEED_API_KEY + "&v=2&format=json&q="+ this.state.searchResult + "&l="+ this.state.userCity +
-    "%2C+"+ this.state.userState + "&co=" + this.state.userCountryCode + "&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&limit=25")
+
+    axios.get("https://api.indeed.com/ads/apisearch?publisher=" + process.env.REACT_APP_INDEED_API_KEY + "&v=2&format=json&q="+ this.state.searchTerm + "&l="+ this.props.userCity +
+    "%2C+"+ this.props.userState + "&co=" + this.props.userCountryCode + "&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&limit=25")
     .then(res => {
       this.setState({
         results: res.data.results
@@ -103,24 +33,35 @@ class JobPosts extends Component {
     });
   }
 
-  componentDidMount(){
-    this.getLocation();
+  // When the user enters data into the search bar, the state of the search term is updated.
+  textChange = (e) => {
+    this.setState({searchTerm: e.target.value})
+  }
+
+  // When the user hits enter to search a job, the final search term is used and runs functions to get job data
+  onSubmit = (e) => {
+    e.preventDefault()
+    this.getIndeedData();
 
   }
 
+  // Render To Page Method:
   render()
   {
+    // Maps The Results To a variable "posts" with each object in its own "post"
+    // Then returns a Job Post Component with job details as its prop.
     this.posts = this.state.results.map((post, key) =>
       <JobPost jobKey={post.jobkey} jobTitle = {post.jobtitle} company = {post.company} city = {post.city} state = {post.state} country = {post.country} desc = {post.snippet}
       url = {post.url} />
     );
 
+    // Main Return Produces the Search Bar, and when Posts are searched for produces the list of mapped posts
     return(
-      <div>
-        <form onSubmit={this.onSubmit}>
-            <input type="text" id="searchBar" placeholder="Search for a job near you..." onChange={this.textChange}/>
-        </form>
-        {this.posts}
+      <div className="searchBox">
+            <form onSubmit={this.onSubmit}>
+                <input type="text" id="searchBar" placeholder="Search for a job near you..." onChange={this.textChange}/>
+            </form>
+          {this.posts}
       </div>
       )
   }
