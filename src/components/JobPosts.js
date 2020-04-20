@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import axios from "axios"
 import JobPost from "./JobPost"
+import NoJobs from "./NoJobs"
 
 class JobPosts extends Component {
 
@@ -36,11 +37,13 @@ class JobPosts extends Component {
   // When the user enters data into the search bar, the state of the search term is updated.
   textChange = (e) => {
     this.setState({searchTerm: e.target.value})
+    console.log(this.state.searchTerm);
   }
 
   // When the user hits enter to search a job, the final search term is used and runs functions to get job data
   onSubmit = (e) => {
     e.preventDefault()
+    this.setState({searchTerm: e.target.value})
     this.getIndeedData();
 
   }
@@ -51,9 +54,10 @@ class JobPosts extends Component {
     // Maps The Results To a variable "posts" with each object in its own "post"
     // Then returns a Job Post Component with job details as its prop.
     this.posts = this.state.results.map((post, key) =>
-      <JobPost jobKey={post.jobkey} jobTitle = {post.jobtitle} company = {post.company} city = {post.city} state = {post.state} country = {post.country} desc = {post.snippet}
+      <JobPost jobKey={post.jobkey} jobTitle = {post.jobtitle[0].toUpperCase() + post.jobtitle.slice(1)} company = {post.company} city = {post.city} state = {post.state} country = {post.country} desc = {post.snippet}
       url = {post.url} />
     );
+    console.log(this.posts)
 
     // Main Return Produces the Search Bar, and when Posts are searched for produces the list of mapped posts
     return(
@@ -61,7 +65,7 @@ class JobPosts extends Component {
             <form onSubmit={this.onSubmit}>
                 <input type="text" id="searchBar" placeholder="Search for a job near you..." onChange={this.textChange}/>
             </form>
-          {this.posts}
+        {this.posts}
       </div>
       )
   }

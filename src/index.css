@@ -77,9 +77,10 @@ a {
   height: 300px;
   display: inline-grid;
   overflow: hidden;
+}
 
-
-
+#nojobtext {
+  
 }
 
 .bigname {
