@@ -50,17 +50,32 @@ a {
   text-align: center;
 }
 
-#searchBar {
+.search {
   flex: 1;
   margin-top: 2%;
+  margin-right: 2%;
   border-radius: 20px;
-  width: 50%;
   font-size: 16px;
   background-color: white;
-  background-image: url('/search.png');
   background-position: 10px, 50%;
   background-repeat: no-repeat;
   padding: 12px 20px 12px 40px;
+  display: inline-block;
+
+}
+
+#searchBar {
+  background-image: url('/search.png');
+  width: 25%;
+}
+
+#locationBar {
+  width: 15%;
+}
+
+
+label {
+
 }
 
 .searchBox {
@@ -79,9 +94,6 @@ a {
   overflow: hidden;
 }
 
-#nojobtext {
-  
-}
 
 .bigname {
   left: 50%;

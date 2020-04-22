@@ -9,6 +9,7 @@ class JobPosts extends Component {
   {
     super(props);
     this.state = {
+      userCity: this.props.userCity,
       searchTerm: undefined, // Search Term From User
       indeedResults: [],           // Results Taken From Indeed
       glassdoorResults: []        // Results Taken From GlassDoor
@@ -24,7 +25,7 @@ class JobPosts extends Component {
   getJobData = () =>
   {
     axios.get("http://api.glassdoor.com/api/api.htm?v=1&format=json&t.p=" + process.env.REACT_APP_GLASSDOOR_PARTNER_ID + "&t.k=" + process.env.REACT_APP_GLASSDOOR_PARTNER_KEY +
-    "&action=jobs&q="+ this.state.searchTerm + "&city=" + this.props.userCity)
+    "&action=jobs&q="+ this.state.searchTerm + "&city=" + this.state.userCity)
     .then(res => {
       this.setState({
         glassdoorResults: res.data.response.jobListings
@@ -32,7 +33,7 @@ class JobPosts extends Component {
       })
     });
 
-    axios.get("https://api.indeed.com/ads/apisearch?publisher=" + process.env.REACT_APP_INDEED_API_KEY + "&v=2&format=json&q="+ this.state.searchTerm + "&l="+ this.props.userCity +
+    axios.get("https://api.indeed.com/ads/apisearch?publisher=" + process.env.REACT_APP_INDEED_API_KEY + "&v=2&format=json&q="+ this.state.searchTerm + "&l="+ this.state.userCity +
     "%2C+"+ this.props.userState + "&co=" + this.props.userCountryCode + "&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&limit=25")
     .then(res => {
       this.setState({
@@ -44,13 +45,18 @@ class JobPosts extends Component {
 
   // When the user enters data into the search bar, the state of the search term is updated.
   textChange = (e) => {
-    this.setState({searchTerm: e.target.value})
+    this.setState({ [e.target.name]: e.target.value });
+
   }
 
   // When the user hits enter to search a job, the final search term is used and runs functions to get job data
   onSubmit = (e) => {
     e.preventDefault()
-    this.setState({searchTerm: e.target.value})
+    this.setState({ [e.target.name]: e.target.value });
+    if (e.target.name === "userCity" && e.target.value === undefined)
+    {
+      this.setState({userCity: this.props.userCity})
+    }
     this.getJobData();
 
   }
@@ -84,7 +90,13 @@ class JobPosts extends Component {
     return(
       <div className="searchBox">
             <form onSubmit={this.onSubmit}>
-                <input type="text" id="searchBar" placeholder="Search for a job near you..." onChange={this.textChange}/>
+
+                <input type="text" className="search" id="searchBar" name="searchTerm" placeholder="Search for a job near you..." onChange={this.textChange}
+                onKeyDown={(e) => (e.code===13) ? this.onSubmit : null }/>
+
+                <input type="text" className="search" id="locationBar" name="userCity" placeholder={this.props.userCity} onChange={this.textChange}
+                onKeyDown={(e) => (e.code===13) ? this.onSubmit : null }/>
+                <input type="submit" value="Submit" />
             </form>
         {this.jobPosts}
       </div>
