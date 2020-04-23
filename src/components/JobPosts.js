@@ -12,7 +12,8 @@ class JobPosts extends Component {
       userCity: this.props.userCity,
       searchTerm: undefined, // Search Term From User
       indeedResults: [],           // Results Taken From Indeed
-      glassdoorResults: []        // Results Taken From GlassDoor
+      glassdoorResults: [],        // Results Taken From GlassDoor
+      showSort: false
     };
 
     // Binding Functions to this
@@ -47,17 +48,25 @@ class JobPosts extends Component {
   textChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
 
+
   }
 
   // When the user hits enter to search a job, the final search term is used and runs functions to get job data
   onSubmit = (e) => {
     e.preventDefault()
-    this.setState({ [e.target.name]: e.target.value });
-    if (e.target.name === "userCity" && e.target.value === undefined)
+
+    if (!e.target.userCity.value)
     {
       this.setState({userCity: this.props.userCity})
     }
-    this.getJobData();
+
+    if (this.state.searchTerm)
+    {
+      this.getJobData();
+      this.setState({showSort: true})
+    }
+
+
 
   }
 
@@ -69,7 +78,7 @@ class JobPosts extends Component {
     this.indeedPosts = this.state.indeedResults.map((post, key) =>
       <JobPost jobKey={post.jobkey} jobTitle = {post.jobtitle[0].toUpperCase() + post.jobtitle.slice(1)} company = {post.company} city = {post.city}
         state = {post.state} country = {post.country} desc = {post.snippet}
-      url = {post.url} />
+      url = {post.url} from="Indeed"/>
     );
 
     // Maps The Results from Glassdoor To a variable "glassdoorPosts" with each object in its own "post"
@@ -77,7 +86,7 @@ class JobPosts extends Component {
     this.glassdoorPosts = this.state.glassdoorResults.map((post, key) =>
       <JobPost jobKey={post.jobListingId} jobTitle = {post.jobTitle[0].toUpperCase() + post.jobTitle.slice(1)} company = {post.employer.name}
         city = {post.location} state = {this.props.userState} country = {this.props.userCountryCode} desc = {post.descriptionFragment}
-      url = {"http://glassdoor.com" + post.jobViewUrl} />
+      url = {"http://glassdoor.com" + post.jobViewUrl} from="Glassdoor"/>
     );
 
     // Creates a new array that concatenates all the job sites results
@@ -96,7 +105,15 @@ class JobPosts extends Component {
 
                 <input type="text" className="search" id="locationBar" name="userCity" placeholder={this.props.userCity} onChange={this.textChange}
                 onKeyDown={(e) => (e.code===13) ? this.onSubmit : null }/>
-                <input type="submit" value="Submit" />
+
+                {this.state.showSort ?
+                  <select id="sorter">
+                    <option value="a-z">Sort: A-Z</option>
+                    <option value="z-a">Sort: Z-A</option>
+                    <option value="employer">Sort: Employer</option>
+                  </select> : null}
+
+                <input id="submitButton" type="submit" value="Submit"/>
             </form>
         {this.jobPosts}
       </div>

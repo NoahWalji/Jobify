@@ -102,7 +102,7 @@ class App extends Component {
       <div className="App">
         {!this.state.done ? (
           <div className="Loading">
-            <ReactLoading type={"balls"} color={"black"} height={'10%'} width={'10%'} />
+            <ReactLoading type={"spinningBubbles"} color={"green"} height={'10%'} width={'10%'} />
           </div>
           ) : (
           <div className="container">

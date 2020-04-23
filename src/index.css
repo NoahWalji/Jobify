@@ -1,12 +1,14 @@
+
+input:focus {
+    outline:none;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background-color: rgb(180, 255, 179);
+  background-color: rgb(247, 249, 255);
 }
 
 .Loading {
@@ -37,6 +39,7 @@ a {
 
 #bigname-title {
   flex: 1;
+  color: rgb(106, 168, 106);
   font-family: 'Syncopate', sans-serif;
   font-size: 73px;
   display:block;
@@ -48,41 +51,41 @@ a {
   display: block;
   font-size: 33px;
   text-align: center;
+  font-family: 'Roboto', sans-serif;
 }
 
 .search {
   flex: 1;
   margin-top: 2%;
   margin-right: 2%;
-  border-radius: 20px;
+  border-radius: 15px;
   font-size: 16px;
   background-color: white;
   background-position: 10px, 50%;
   background-repeat: no-repeat;
-  padding: 12px 20px 12px 40px;
   display: inline-block;
 
 }
 
 #searchBar {
   background-image: url('/search.png');
+  padding: 12px 20px 12px 40px;
   width: 25%;
 }
 
 #locationBar {
   width: 15%;
+  padding: 12px 20px 12px;
 }
 
 
-label {
-
-}
 
 .searchBox {
   text-align: center;
 }
 
 .jobPost {
+  font-family: 'Roboto', sans-serif;
   border-style: solid;
   border-width: 1px;
   border-radius: 20px;
@@ -100,14 +103,39 @@ label {
   height: 25%;
 }
 
-#jobTitle {
-  font-weight: bold;
+.jobTitle {
   font-size: 20px;
+  font-weight: bold;
   display: block;
 }
 
 #jobLocation {
   line-height: 1px;
+}
+
+#submitButton {
+  background-color: rgb(106, 168, 106);
+  border-radius: 10px;
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 10px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+#submitButton:hover {
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+#sorter {
+  width: 150px;
+  margin-right: 1%;
+  font-size: 16px;
 }
 
 #grow:hover

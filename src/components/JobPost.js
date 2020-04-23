@@ -8,10 +8,10 @@ class JobPost extends Component {
     return(
     <a href={this.props.url}>
       <div className="jobPost" id="grow">
-        <span id="jobTitle">{this.props.jobTitle}</span>
+        <span className="jobTitle">{this.props.jobTitle}</span>
         <span>{this.props.company} - {this.props.city}, {this.props.state}, {this.props.country}</span>
-        <p id="jobLocation"></p>
         <p>{this.props.desc}</p>
+        <p>Source: {this.props.from}</p>
       </div>
     </a>
     )
