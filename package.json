@@ -10,7 +10,9 @@
     "bootstrap": "^4.4.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-dropdown": "^1.7.0",
     "react-fade-in": "^0.1.8",
+    "react-fontawesome": "^1.7.1",
     "react-loading": "^2.0.3",
     "react-lottie": "^1.2.3",
     "react-scripts": "3.4.1"

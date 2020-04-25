@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import axios from "axios"
 import JobPost from "./JobPost"
+import SortButton from "./SortButton"
 
 class JobPosts extends Component {
 
@@ -13,11 +14,14 @@ class JobPosts extends Component {
       searchTerm: undefined, // Search Term From User
       indeedResults: [],           // Results Taken From Indeed
       glassdoorResults: [],        // Results Taken From GlassDoor
-      showSort: false
+      showSort: false,
+      jobPosts: [],
     };
 
     // Binding Functions to this
     this.getJobData = this.getJobData.bind(this);
+    this.setJobPosts = this.setJobPosts.bind(this);
+    this.sorter = this.sorter.bind(this);
   }
 
 
@@ -32,7 +36,9 @@ class JobPosts extends Component {
         glassdoorResults: res.data.response.jobListings
 
       })
-    });
+    }).then(res => {
+      this.setJobPosts();
+    })
 
     axios.get("https://api.indeed.com/ads/apisearch?publisher=" + process.env.REACT_APP_INDEED_API_KEY + "&v=2&format=json&q="+ this.state.searchTerm + "&l="+ this.state.userCity +
     "%2C+"+ this.props.userState + "&co=" + this.props.userCountryCode + "&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&limit=25")
@@ -41,7 +47,29 @@ class JobPosts extends Component {
         indeedResults: res.data.results
 
       })
-    });
+    }).then(res => {
+      this.setJobPosts();
+    })
+  }
+
+  setJobPosts = (e) => {
+    // Maps The Results from Indeed To a variable "indeedPosts" with each object in its own "post"
+    // Then returns a Job Post Component with job details as its prop.
+    this.indeedPosts = this.state.indeedResults.map((post, key) =>
+      <JobPost jobKey={post.jobkey} jobTitle = {post.jobtitle[0].toUpperCase() + post.jobtitle.slice(1)} company = {post.company} city = {post.city}
+        state = {post.state} country = {post.country} desc = {post.snippet.replace("<b>","").replace("</b>","")}
+      url = {post.url} from="Indeed"/>
+    );
+
+    // Maps The Results from Glassdoor To a variable "glassdoorPosts" with each object in its own "post"
+    // Then returns a Job Post Component with job details as its prop.
+    this.glassdoorPosts = this.state.glassdoorResults.map((post, key) =>
+      <JobPost jobKey={post.jobListingId} jobTitle = {post.jobTitle[0].toUpperCase() + post.jobTitle.slice(1)} company = {post.employer.name}
+        city = {post.location} state = {this.props.userState} country = {this.props.userCountryCode} desc = {post.descriptionFragment.replace("<strong>","").replace("</strong>","")}
+      url = {"http://glassdoor.com" + post.jobViewUrl} from="Glassdoor"/>
+    );
+    this.setState({jobPosts: this.indeedPosts.concat(this.glassdoorPosts)})
+    this.sorter("AZ")
   }
 
   // When the user enters data into the search bar, the state of the search term is updated.
@@ -65,35 +93,29 @@ class JobPosts extends Component {
       this.getJobData();
       this.setState({showSort: true})
     }
-
-
-
   }
+
+  sorter = (sortBy) => {
+    switch(sortBy) {
+      case "AZ":
+        this.setState({jobPosts: this.state.jobPosts.slice(0).sort((a, b) => (a.props.jobTitle > b.props.jobTitle) ? 1 : -1)})
+        break;
+      case "ZA":
+        this.setState({jobPosts: this.state.jobPosts.slice(0).sort((a, b) => (a.props.jobTitle < b.props.jobTitle) ? 1 : -1)})
+        break;
+      case "Emp":
+        this.setState({jobPosts: this.state.jobPosts.slice(0).sort((a, b) => (a.props.company > b.props.company) ? 1 : -1)})
+        break;
+      default:
+        break;
+      }
+  }
+
 
   // Render To Page Method:
   render()
   {
-    // Maps The Results from Indeed To a variable "indeedPosts" with each object in its own "post"
-    // Then returns a Job Post Component with job details as its prop.
-    this.indeedPosts = this.state.indeedResults.map((post, key) =>
-      <JobPost jobKey={post.jobkey} jobTitle = {post.jobtitle[0].toUpperCase() + post.jobtitle.slice(1)} company = {post.company} city = {post.city}
-        state = {post.state} country = {post.country} desc = {post.snippet}
-      url = {post.url} from="Indeed"/>
-    );
 
-    // Maps The Results from Glassdoor To a variable "glassdoorPosts" with each object in its own "post"
-    // Then returns a Job Post Component with job details as its prop.
-    this.glassdoorPosts = this.state.glassdoorResults.map((post, key) =>
-      <JobPost jobKey={post.jobListingId} jobTitle = {post.jobTitle[0].toUpperCase() + post.jobTitle.slice(1)} company = {post.employer.name}
-        city = {post.location} state = {this.props.userState} country = {this.props.userCountryCode} desc = {post.descriptionFragment}
-      url = {"http://glassdoor.com" + post.jobViewUrl} from="Glassdoor"/>
-    );
-
-    // Creates a new array that concatenates all the job sites results
-    this.jobPosts = this.indeedPosts.concat(this.glassdoorPosts);
-
-    // Sorts the results alphabetically
-    this.jobPosts.sort((a, b) => (a.props.jobTitle > b.props.jobTitle) ? 1 : -1)
 
     // Main Return Produces the Search Bar, and when Posts are searched for produces the list of mapped posts
     return(
@@ -105,17 +127,18 @@ class JobPosts extends Component {
 
                 <input type="text" className="search" id="locationBar" name="userCity" placeholder={this.props.userCity} onChange={this.textChange}
                 onKeyDown={(e) => (e.code===13) ? this.onSubmit : null }/>
-
-                {this.state.showSort ?
-                  <select id="sorter">
-                    <option value="a-z">Sort: A-Z</option>
-                    <option value="z-a">Sort: Z-A</option>
-                    <option value="employer">Sort: Employer</option>
-                  </select> : null}
-
                 <input id="submitButton" type="submit" value="Submit"/>
             </form>
-        {this.jobPosts}
+
+        {this.state.showSort?
+          <div>
+            <SortButton name="A-Z" myClick={() => this.sorter("AZ")}/>
+            <SortButton name="Z-A" myClick={() => this.sorter("ZA")}/>
+            <SortButton name="Employer" myClick={() => this.sorter("Emp")}/>
+          </div>:
+        null}
+
+        {this.state.jobPosts}
       </div>
       )
   }
