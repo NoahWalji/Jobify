@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import axios from "axios"
 import JobPost from "./JobPost"
 import SortButton from "./SortButton"
+import Pagination from "./Pagination"
 
 class JobPosts extends Component {
 
@@ -16,6 +17,8 @@ class JobPosts extends Component {
       glassdoorResults: [],        // Results Taken From GlassDoor
       showSort: false,
       jobPosts: [],
+      currentPage: 1,
+      jobsPerPage: 8
     };
 
     // Binding Functions to this
@@ -99,12 +102,15 @@ class JobPosts extends Component {
     switch(sortBy) {
       case "AZ":
         this.setState({jobPosts: this.state.jobPosts.slice(0).sort((a, b) => (a.props.jobTitle > b.props.jobTitle) ? 1 : -1)})
+        this.setState({currentPage: 1})
         break;
       case "ZA":
         this.setState({jobPosts: this.state.jobPosts.slice(0).sort((a, b) => (a.props.jobTitle < b.props.jobTitle) ? 1 : -1)})
+        this.setState({currentPage: 1})
         break;
       case "Emp":
         this.setState({jobPosts: this.state.jobPosts.slice(0).sort((a, b) => (a.props.company > b.props.company) ? 1 : -1)})
+        this.setState({currentPage: 1})
         break;
       default:
         break;
@@ -115,6 +121,16 @@ class JobPosts extends Component {
   // Render To Page Method:
   render()
   {
+    const indexOfLastPost = this.state.currentPage * this.state.jobsPerPage;
+    const indexofFirstPost = indexOfLastPost - this.state.jobsPerPage;
+    const currentJobs = this.state.jobPosts.slice(indexofFirstPost,indexOfLastPost)
+    const paginate = pageNumber => {
+      this.setState({currentPage: pageNumber})
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
 
 
     // Main Return Produces the Search Bar, and when Posts are searched for produces the list of mapped posts
@@ -138,7 +154,8 @@ class JobPosts extends Component {
           </div>:
         null}
 
-        {this.state.jobPosts}
+        {currentJobs}
+        <Pagination jobsPerPage={this.state.jobsPerPage} totalJobs={this.state.jobPosts.length} paginate={paginate} currentPage={this.state.currentPage}/>
       </div>
       )
   }
